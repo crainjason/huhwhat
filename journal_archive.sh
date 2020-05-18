@@ -12,21 +12,19 @@ CURRENT="$JOURNALNAME"_Journal_Current.markdown
 ARCHIVE="$JOURNALNAME"_Journal_Archive.markdown
 JOURNALMODELINES=$(cat modelines_for_journals)
 
-# I have started getting a list of recurrent tasks for my professional journal. This is ugly
-# and complains multiple compromises to mediocrity, including extra blank lines and having
-# to list all tasks on a single line. This gets the day of the week (1-7) and reads the
-# text there and then latter appends it to the top of the preserved items below.
 
 case "$JOURNALNAME" in
 	"Professional")
-		# sed prints everyting between the two strings below, including the strings.
-		# https://www.gnu.org/software/sed/manual/html_node/sed-commands-list.html
-		# sed -n start_pattern,end_pattern/p
+		# I have started getting a list of recurrent tasks for my professional journal. This is ugly
+		# and complains multiple compromises to mediocrity, including extra blank lines and having
+		# to list all tasks on a single line. This gets the day of the week (1-7) and reads the
+		# text at that line in the file, appending it to the top of the preserved items below.
 		#
-		# I do this because I want to preserve everything that's still on my list of
-		# things to do between professional journal entries.
-		# now this pipes all that into another sed that appends some recurring tasks from
-		# a file mentioned 
+		# First sed prints everyting between the two strings below, including the strings.
+		# sed -n start_pattern,end_pattern/p
+		# Second sed replaces the line below with that line, two newlines, and the recurring
+		# task line from the file.
+		# https://www.gnu.org/software/sed/manual/html_node/sed-commands-list.html
 		RECURRING=$(sed -n "$(date +%u)p" Professional_Journal_Recurring_Tasks_Daily)
 		DEFAULTENTRY=$(sed -n "/## Things and Stuff/,/## Completed/p" $CURRENT | 
 			sed "s/## Things and Stuff/## Things and Stuff\n\n$RECURRING/");;
