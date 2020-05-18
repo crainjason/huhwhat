@@ -12,6 +12,11 @@ CURRENT="$JOURNALNAME"_Journal_Current.markdown
 ARCHIVE="$JOURNALNAME"_Journal_Archive.markdown
 JOURNALMODELINES=$(cat modelines_for_journals)
 
+# I have started getting a list of recurrent tasks for my professional journal. This is ugly
+# and complains multiple compromises to mediocrity, including extra blank lines and having
+# to list all tasks on a single line. This gets the day of the week (1-7) and reads the
+# text there and then latter appends it to the top of the preserved items below.
+
 case "$JOURNALNAME" in
 	"Professional")
 		# sed prints everyting between the two strings below, including the strings.
@@ -20,7 +25,11 @@ case "$JOURNALNAME" in
 		#
 		# I do this because I want to preserve everything that's still on my list of
 		# things to do between professional journal entries.
-		DEFAULTENTRY=$(sed -n "/## Things and Stuff/,/## Completed/p" $CURRENT);;
+		# now this pipes all that into another sed that appends some recurring tasks from
+		# a file mentioned 
+		RECURRING=$(sed -n "$(date +%u)p" Professional_Journal_Recurring_Tasks_Daily)
+		DEFAULTENTRY=$(sed -n "/## Things and Stuff/,/## Completed/p" $CURRENT | 
+			sed "s/## Things and Stuff/## Things and Stuff\n\n$RECURRING/");;
 	"Nethack")
 		# I have a standard set of things I want to see in each new Nethack journal
 		# page. I keep them stored elsewhere for inclusion here.
@@ -41,3 +50,4 @@ head $CURRENT --lines=-1 >> $ARCHIVE
 # Then overwrite the existing journal page with a new one starting with the date at headline 1,
 # the default entry, and (you guessed it) any modelines we want.
 echo -e "# $(date)\n\n$DEFAULTENTRY\n\n\n$JOURNALMODELINES" > $CURRENT
+
